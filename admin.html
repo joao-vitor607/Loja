@@ -1,0 +1,2326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6366f1">
+    <title>Admin Dashboard</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --gray-900: #0f172a;
+            --gray-800: #1e293b;
+            --gray-700: #334155;
+            --gray-600: #475569;
+            --gray-500: #64748b;
+            --gray-400: #94a3b8;
+            --gray-300: #cbd5e1;
+            --gray-200: #e2e8f0;
+            --gray-100: #f1f5f9;
+            --gray-50: #f8fafc;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+        }
+        
+        /* Login Screen */
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: var(--gray-600);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+            background: var(--gray-50);
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1.125rem;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-weight: 600;
+            animation: slideDown 0.3s;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            color: var(--danger);
+            border: 2px solid #fecaca;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: var(--success);
+            border: 2px solid #a7f3d0;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+            background: var(--gray-50);
+        }
+        
+        .dashboard.active {
+            display: flex;
+        }
+        
+        /* Topbar */
+        .topbar {
+            background: white;
+            height: 70px;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .menu-toggle:hover {
+            background: var(--gray-100);
+        }
+        
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .search-box {
+            position: relative;
+            display: none;
+        }
+        
+        .search-input {
+            width: 300px;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            width: 350px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .btn-logout {
+            padding: 0.75rem 1.5rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        /* Layout */
+        .layout {
+            display: flex;
+            padding-top: 70px;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            height: calc(100vh - 70px);
+            position: fixed;
+            left: 0;
+            top: 70px;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+        
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+        
+        .menu-title {
+            padding: 0 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray-500);
+            margin-bottom: 0.75rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.875rem 1.5rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            user-select: none;
+        }
+        
+        .menu-item:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+        }
+        
+        .menu-item.active {
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .menu-icon {
+            width: 24px;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-label {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .menu-badge {
+            padding: 0.25rem 0.5rem;
+            background: var(--danger);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: calc(100vh - 70px);
+            transition: all 0.3s;
+        }
+        
+        /* Page */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+        
+        .page-subtitle {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .stat-change.up {
+            color: var(--success);
+        }
+        
+        .stat-change.down {
+            color: var(--danger);
+        }
+        
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--gray-900);
+        }
+        
+        .btn-add {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-add:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--gray-50);
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            border-bottom: 2px solid var(--gray-200);
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+        
+        tr:hover {
+            background: var(--gray-50);
+        }
+        
+        /* Badges */
+        .badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        
+        /* Buttons */
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-view {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-sm:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Categories */
+        .categories-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .category-remove {
+            background: rgba(255,255,255,0.25);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .category-remove:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .add-category {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .add-category input {
+            flex: 1;
+        }
+        
+        /* Coupons */
+        .coupons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .coupon-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .coupon-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+        
+        .coupon-code {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .coupon-details {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.875rem;
+            opacity: 0.95;
+        }
+        
+        /* Chat */
+        .chat-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 1.5rem;
+            height: 600px;
+        }
+        
+        .chat-list {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            overflow-y: auto;
+        }
+        
+        .chat-item {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .chat-item:hover {
+            background: var(--gray-50);
+        }
+        
+        .chat-item.active {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .chat-item.unread {
+            background: #eff6ff;
+        }
+        
+        .chat-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chat-name {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .chat-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        .chat-preview {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .chat-window {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--gray-50);
+        }
+        
+        .chat-message {
+            margin-bottom: 1.25rem;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-bubble {
+            display: inline-block;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        
+        .chat-message.user .chat-bubble {
+            background: white;
+            border: 2px solid var(--gray-200);
+        }
+        
+        .chat-message.admin .chat-bubble {
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            color: white;
+        }
+        
+        .chat-message.admin {
+            text-align: right;
+        }
+        
+        .chat-input-area {
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn-send {
+            padding: 0.875rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-send:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 998;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .modal-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 999;
+            display: none;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+        
+        .modal.active {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .modal-header {
+            margin-bottom: 2rem;
+        }
+        
+        .modal-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--gray-900);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-secondary {
+            flex: 1;
+            padding: 1rem;
+            background: var(--gray-200);
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+        
+        .btn-primary {
+            flex: 1;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 101;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .search-box {
+                display: none;
+            }
+            
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .chat-list {
+                height: 300px;
+            }
+            
+            .chat-window {
+                height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 0 1rem;
+            }
+            
+            .brand {
+                font-size: 1.25rem;
+            }
+            
+            .user-name {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-logout {
+                padding: 0.625rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div class="login-container" id="loginScreen">
+    <div class="login-logo">🔐</div>
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Sistema de Gestão Profissional</p>
+    
+    <div class="alert alert-error" id="alertError"></div>
+    <div class="alert alert-success" id="alertSuccess"></div>
+    
+    <form onsubmit="return doLogin(event)">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-input" id="loginUser" value="ferrera" required autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" class="form-input" id="loginPass" value="123" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-login">Entrar no Sistema</button>
+    </form>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboard">
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <div class="brand">ADMIN PRO</div>
+        </div>
+        <div class="topbar-right">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar...">
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">F</div>
+                <span class="user-name" id="currentUser">ferrera</span>
+            </div>
+            <button class="btn-logout" onclick="doLogout()">Sair</button>
+        </div>
+    </div>
+    
+    <!-- Layout -->
+    <div class="layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="menu-section">
+                <div class="menu-title">Principal</div>
+                <div class="menu-item active" onclick="showPage('dashboardPage')">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-label">Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showPage('productsPage')">
+                    <span class="menu-icon">🛍️</span>
+                    <span class="menu-label">Produtos</span>
+                </div>
+                <div class="menu-item" onclick="showPage('ordersPage')">
+                    <span class="menu-icon">📦</span>
+                    <span class="menu-label">Pedidos</span>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Marketing</div>
+                <div class="menu-item" onclick="showPage('couponsPage')">
+                    <span class="menu-icon">🎫</span>
+                    <span class="menu-label">Cupons</span>
+                </div>
+                <div class="menu-item" onclick="showPage('categoriesPage')">
+                    <span class="menu-icon">📁</span>
+                    <span class="menu-label">Categorias</span>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Atendimento</div>
+                <div class="menu-item" onclick="showPage('chatPage')">
+                    <span class="menu-icon">💬</span>
+                    <span class="menu-label">Chat</span>
+                    <span class="menu-badge" id="chatBadge" style="display:none;">0</span>
+                </div>
+            </div>
+            
+            <div class="menu-section">
+                <div class="menu-title">Sistema</div>
+                <div class="menu-item" onclick="showPage('settingsPage')">
+                    <span class="menu-icon">⚙️</span>
+                    <span class="menu-label">Configurações</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboardPage">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Visão geral do negócio</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Receita (7 dias)</div>
+                                <div class="stat-value" id="statRevenue7d">R$ 0,00</div>
+                                <div class="stat-change">Pedidos não cancelados</div>
+                            </div>
+                            <div class="stat-icon">💰</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Produtos</div>
+                                <div class="stat-value" id="statProducts">0</div>
+                                <div class="stat-change">Cadastrados</div>
+                            </div>
+                            <div class="stat-icon">🛍️</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Pedidos</div>
+                                <div class="stat-value" id="statOrders">0</div>
+                                <div class="stat-change">Total histórico</div>
+                            </div>
+                            <div class="stat-icon">📦</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Cupons</div>
+                                <div class="stat-value" id="statCoupons">0</div>
+                                <div class="stat-change">Ativos</div>
+                            </div>
+                            <div class="stat-icon">🎫</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Conversas</div>
+                                <div class="stat-value" id="statChats">0</div>
+                                <div class="stat-change">Clientes ativos</div>
+                            </div>
+                            <div class="stat-icon">💬</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Últimos Pedidos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Pagamento</th>
+                                        <th>Status</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrders"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products Page -->
+            <div class="page" id="productsPage">
+                <div class="page-header">
+                    <h1 class="page-title">Produtos</h1>
+                    <p class="page-subtitle">Gerencie seu catálogo</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Todos os Produtos</h3>
+                        <button class="btn-add" onclick="openProductModal()">+ Adicionar Produto</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nome</th>
+                                        <th>Categoria</th>
+                                        <th>Preço</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Orders Page -->
+            <div class="page" id="ordersPage">
+                <div class="page-header">
+                    <h1 class="page-title">Pedidos</h1>
+                    <p class="page-subtitle">Acompanhe todas as vendas</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Lista de Pedidos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>WhatsApp</th>
+                                        <th>Pagamento</th>
+                                        <th>Entrega</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Data</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Coupons Page -->
+            <div class="page" id="couponsPage">
+                <div class="page-header">
+                    <h1 class="page-title">Cupons de Desconto</h1>
+                    <p class="page-subtitle">Crie promoções e descontos</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Cupons Ativos</h3>
+                        <button class="btn-add" onclick="openCouponModal()">+ Criar Cupom</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="coupons-grid" id="couponsList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Categories Page -->
+            <div class="page" id="categoriesPage">
+                <div class="page-header">
+                    <h1 class="page-title">Categorias</h1>
+                    <p class="page-subtitle">Organize seus produtos</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Gerenciar Categorias</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="categories-list" id="categoriesList"></div>
+                        <div class="add-category">
+                            <input type="text" class="form-input" id="newCategory" placeholder="Nova categoria">
+                            <button class="btn-add" onclick="addCategory()">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Page -->
+            <div class="page" id="chatPage">
+                <div class="page-header">
+                    <h1 class="page-title">Chat de Atendimento</h1>
+                    <p class="page-subtitle">Converse com seus clientes</p>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-list" id="chatList"></div>
+                    <div class="chat-window">
+                        <div class="chat-header">Mensagens</div>
+                        <div class="chat-messages" id="adminChatMessages">
+                            <div class="empty-state">
+                                <div class="empty-icon">💬</div>
+                                <p>Selecione uma conversa</p>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" id="adminChatInput" placeholder="Digite sua mensagem...">
+                            <button class="btn-send" onclick="sendAdminMessage()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Page -->
+            <div class="page" id="settingsPage">
+                <div class="page-header">
+                    <h1 class="page-title">Configurações</h1>
+                    <p class="page-subtitle">Configure sua loja e conta</p>
+                </div>
+                
+                <div class="alert alert-success" id="settingsAlert"></div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Dados da Loja</h3>
+                    </div>
+                    <div class="card-body">
+                        <form onsubmit="return saveSettings(event)">
+                            <div class="form-group">
+                                <label class="form-label">Nome da Loja</label>
+                                <input type="text" class="form-input" id="settingsName" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">WhatsApp</label>
+                                    <input type="tel" class="form-input" id="settingsPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-input" id="settingsEmail">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Chave PIX</label>
+                                <input type="text" class="form-input" id="settingsPix" required>
+                            </div>
+                            <button type="submit" class="btn-primary">Salvar Configurações</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Segurança da Conta</h3>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn-primary" onclick="openChangePassword()">Alterar Senha</button>
+                        <button class="btn-secondary" style="margin-left:1rem;" onclick="openChangeUsername()">Alterar Username</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Backup e Exportação</h3>
+                    </div>
+                    <div class="card-body">
+                        <p style="color:var(--gray-600);margin-bottom:1rem;font-size:0.9rem;">Faça backup regularmente. Os dados ficam salvos apenas neste navegador até você migrar para um banco de dados.</p>
+                        <button class="btn-primary" onclick="DB.Backup.exportJSON()">⬇️ Baixar Backup Completo (JSON)</button>
+                        <button class="btn-secondary" style="margin-left:1rem;" onclick="document.getElementById('importFile').click()">⬆️ Importar Backup</button>
+                        <button class="btn-secondary" style="margin-left:1rem;" onclick="DB.Backup.exportOrdersCSV()">📊 Exportar Pedidos (CSV)</button>
+                        <input type="file" id="importFile" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" id="modalOverlay"></div>
+
+<!-- Product Modal -->
+<div class="modal" id="productModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Produto</h3>
+    </div>
+    <form onsubmit="return saveProduct(event)">
+        <input type="hidden" id="productId">
+        <div class="form-group">
+            <label class="form-label">Nome do Produto</label>
+            <input type="text" class="form-input" id="productName" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Categoria</label>
+                <select class="form-select" id="productCategory" required></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Preço (R$)</label>
+                <input type="number" class="form-input" id="productPrice" step="0.01" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Descrição</label>
+            <textarea class="form-textarea" id="productDesc"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Material</label>
+                <input type="text" class="form-input" id="productMaterial" placeholder="Ex: MDF, Madeira Maciça">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Dimensões (L x A x P)</label>
+                <input type="text" class="form-input" id="productDimensions" placeholder="Ex: 200 x 60 x 40 cm">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Sob Encomenda?</label>
+                <select class="form-select" id="productMadeToOrder" onchange="toggleStockField()">
+                    <option value="false">Não (pronta entrega)</option>
+                    <option value="true">Sim</option>
+                </select>
+            </div>
+            <div class="form-group" id="productionDaysGroup" style="display:none;">
+                <label class="form-label">Prazo de Produção (dias)</label>
+                <input type="number" class="form-input" id="productProductionDays" min="0" value="0">
+            </div>
+            <div class="form-group" id="stockGroup">
+                <label class="form-label">Estoque</label>
+                <input type="number" class="form-input" id="productStock" min="0" placeholder="Deixe vazio se não controla">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="productStatus">
+                    <option value="active">Ativo</option>
+                    <option value="inactive">Inativo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Badge</label>
+                <input type="text" class="form-input" id="productBadge" placeholder="Ex: NOVO, SOB ENCOMENDA">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">URL da Imagem</label>
+            <input type="url" class="form-input" id="productImage" placeholder="https://...">
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar Produto</button>
+        </div>
+    </form>
+</div>
+
+<!-- Coupon Modal -->
+<div class="modal" id="couponModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Criar Cupom de Desconto</h3>
+    </div>
+    <form onsubmit="return saveCoupon(event)">
+        <div class="form-group">
+            <label class="form-label">Código do Cupom</label>
+            <input type="text" class="form-input" id="couponCode" placeholder="EX: DESCONTO10" required style="text-transform:uppercase;">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Desconto (%)</label>
+                <input type="number" class="form-input" id="couponDiscount" min="1" max="100" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Usos Disponíveis</label>
+                <input type="number" class="form-input" id="couponUses" min="1" value="100" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Data de Validade</label>
+            <input type="date" class="form-input" id="couponExpiry" required>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary">Criar Cupom</button>
+        </div>
+    </form>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal" id="changePasswordModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Alterar Senha</h3>
+    </div>
+    <form onsubmit="return changePassword(event)">
+        <div class="form-group">
+            <label class="form-label">Senha Atual</label>
+            <input type="password" class="form-input" id="currentPass" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Nova Senha</label>
+            <input type="password" class="form-input" id="newPass" minlength="3" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirmar Nova Senha</label>
+            <input type="password" class="form-input" id="confirmPass" required>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary">Alterar Senha</button>
+        </div>
+    </form>
+</div>
+
+<!-- Change Username Modal -->
+<div class="modal" id="changeUsernameModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Alterar Username</h3>
+    </div>
+    <form onsubmit="return changeUsername(event)">
+        <div class="form-group">
+            <label class="form-label">Senha Atual</label>
+            <input type="password" class="form-input" id="userPassConfirm" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Novo Username</label>
+            <input type="text" class="form-input" id="newUsername" required>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+            <button type="submit" class="btn-primary">Alterar Username</button>
+        </div>
+    </form>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal" id="orderModal">
+    <div class="modal-header">
+        <h3 class="modal-title">Detalhes do Pedido</h3>
+    </div>
+    <div id="orderDetails"></div>
+    <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Fechar</button>
+    </div>
+</div>
+
+<script src="js/db.js"></script>
+<script>
+console.log('🚀 Admin carregado');
+
+var currentSession = DB.Auth.getSession();
+
+// Cache em memória (recarregado via loadData)
+var products = [];
+var orders = [];
+var coupons = [];
+var categories = [];
+var config = {};
+var chatMessages = [];
+var currentChatUser = null;
+
+// Login
+function doLogin(e) {
+    e.preventDefault();
+    var user = document.getElementById('loginUser').value;
+    var pass = document.getElementById('loginPass').value;
+    var btn = e.target.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Entrando...'; }
+
+    DB.Auth.login(user, pass).then(function (res) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+        if (res.ok) {
+            currentSession = res.session;
+            showDashboard();
+        } else {
+            showAlert('error', '❌ ' + res.reason);
+        }
+    });
+
+    return false;
+}
+
+function doLogout() {
+    if (confirm('Sair do sistema?')) {
+        DB.Auth.logout();
+        location.reload();
+    }
+}
+
+function showAlert(type, msg) {
+    var id = type === 'error' ? 'alertError' : 'alertSuccess';
+    var alert = document.getElementById(id);
+    alert.textContent = msg;
+    alert.classList.add('show');
+    setTimeout(function() {
+        alert.classList.remove('show');
+    }, 3000);
+}
+
+// Dashboard
+function showDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('currentUser').textContent = currentSession.username;
+    document.getElementById('userAvatar').textContent = currentSession.username.charAt(0).toUpperCase();
+
+    loadData();
+
+    // Verifica expiração de sessão periodicamente
+    setInterval(function () {
+        if (!DB.Auth.getSession()) {
+            alert('Sua sessão expirou. Faça login novamente.');
+            location.reload();
+        }
+    }, 30000);
+}
+
+function loadData() {
+    Promise.all([
+        DB.Config.get(),
+        DB.Products.list(),
+        DB.Orders.list(),
+        DB.Coupons.list(),
+        DB.Categories.list(),
+        DB.Chat.list()
+    ]).then(function (results) {
+        config = results[0];
+        products = results[1];
+        orders = results[2];
+        coupons = results[3];
+        categories = results[4];
+        chatMessages = results[5];
+
+        loadSettings();
+        renderProducts();
+        renderOrders();
+        renderCoupons();
+        renderCategories();
+        renderChatList();
+        updateStats();
+    });
+}
+
+function updateStats() {
+    document.getElementById('statProducts').textContent = products.length;
+    document.getElementById('statOrders').textContent = orders.length;
+    document.getElementById('statCoupons').textContent = coupons.length;
+
+    var users = {};
+    chatMessages.forEach(function(msg) {
+        if (msg.userKey && !users[msg.userKey]) {
+            users[msg.userKey] = true;
+        }
+    });
+    document.getElementById('statChats').textContent = Object.keys(users).length;
+
+    var unread = chatMessages.filter(function(msg) { return msg.sender === 'user' && !msg.read; }).length;
+    if (unread > 0) {
+        document.getElementById('chatBadge').textContent = unread;
+        document.getElementById('chatBadge').style.display = 'block';
+    } else {
+        document.getElementById('chatBadge').style.display = 'none';
+    }
+
+    var recent = orders.slice(-10).reverse();
+    var html = '';
+    if (recent.length === 0) {
+        html = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--gray-500);">Nenhum pedido ainda</td></tr>';
+    } else {
+        recent.forEach(function(o) {
+            var date = new Date(o.date).toLocaleDateString('pt-BR');
+            html += '<tr>';
+            html += '<td><strong>' + (o.code || ('#' + o.id)) + '</strong></td>';
+            html += '<td>' + o.customerName + '</td>';
+            html += '<td>R$ ' + o.total.toFixed(2) + '</td>';
+            html += '<td>' + getPaymentLabel(o.payment) + '</td>';
+            html += '<td>' + statusBadge(o.status) + '</td>';
+            html += '<td>' + date + '</td>';
+            html += '</tr>';
+        });
+    }
+    document.getElementById('recentOrders').innerHTML = html;
+
+    // Receita últimos 7 dias
+    DB.Orders.stats(7).then(function (s) {
+        var el = document.getElementById('statRevenue7d');
+        if (el) el.textContent = 'R$ ' + s.revenue.toFixed(2);
+    });
+}
+
+// Pages
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.menu-item').forEach(function(m) { m.classList.remove('active'); });
+    document.getElementById(pageId).classList.add('active');
+    event.currentTarget.classList.add('active');
+
+    if (window.innerWidth <= 1024) {
+        document.getElementById('sidebar').classList.remove('active');
+    }
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+}
+
+// Products
+function renderProducts() {
+    if (products.length === 0) {
+        document.getElementById('productsTable').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;">Nenhum produto cadastrado</td></tr>';
+        return;
+    }
+
+    var html = '';
+    products.forEach(function(p) {
+        html += '<tr>';
+        html += '<td><strong>#' + p.id + '</strong></td>';
+        html += '<td>' + p.name + (p.madeToOrder ? ' <span class="badge badge-warning" style="margin-left:4px;">Sob encomenda</span>' : '') + '</td>';
+        html += '<td>' + (p.category || '-') + '</td>';
+        html += '<td><strong>R$ ' + p.price.toFixed(2) + '</strong></td>';
+        html += '<td><span class="badge badge-' + (p.status === 'active' ? 'success' : 'danger') + '">' + (p.status === 'active' ? 'Ativo' : 'Inativo') + '</span></td>';
+        html += '<td>';
+        html += '<button class="btn-sm btn-edit" onclick="editProduct(' + p.id + ')">Editar</button>';
+        html += '<button class="btn-sm btn-delete" onclick="deleteProduct(' + p.id + ')">Excluir</button>';
+        html += '</td></tr>';
+    });
+    document.getElementById('productsTable').innerHTML = html;
+}
+
+function toggleStockField() {
+    var made = document.getElementById('productMadeToOrder').value === 'true';
+    document.getElementById('productionDaysGroup').style.display = made ? 'block' : 'none';
+}
+
+function openProductModal(id) {
+    updateCategorySelects();
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('productModal').classList.add('active');
+
+    if (id) {
+        var p = products.find(function(pr) { return pr.id === id; });
+        if (p) {
+            document.getElementById('productId').value = p.id;
+            document.getElementById('productName').value = p.name;
+            document.getElementById('productCategory').value = p.category || '';
+            document.getElementById('productPrice').value = p.price;
+            document.getElementById('productDesc').value = p.desc || '';
+            document.getElementById('productStatus').value = p.status;
+            document.getElementById('productBadge').value = p.badge || '';
+            document.getElementById('productImage').value = p.image || '';
+            document.getElementById('productMaterial').value = p.material || '';
+            document.getElementById('productDimensions').value = p.dimensions || '';
+            document.getElementById('productMadeToOrder').value = p.madeToOrder ? 'true' : 'false';
+            document.getElementById('productProductionDays').value = p.productionDays || 0;
+            document.getElementById('productStock').value = (p.stock === null || p.stock === undefined) ? '' : p.stock;
+        }
+    } else {
+        document.getElementById('productId').value = '';
+        document.querySelector('#productModal form').reset();
+    }
+    toggleStockField();
+}
+
+function editProduct(id) {
+    openProductModal(id);
+}
+
+function deleteProduct(id) {
+    if (!confirm('Excluir este produto?')) return;
+    DB.Products.remove(id).then(function () {
+        return DB.Products.list();
+    }).then(function (list) {
+        products = list;
+        renderProducts();
+        updateStats();
+    });
+}
+
+function saveProduct(e) {
+    e.preventDefault();
+    var id = document.getElementById('productId').value;
+    var stockVal = document.getElementById('productStock').value;
+
+    var p = {
+        id: id ? parseInt(id) : null,
+        name: document.getElementById('productName').value,
+        category: document.getElementById('productCategory').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        desc: document.getElementById('productDesc').value,
+        status: document.getElementById('productStatus').value,
+        badge: document.getElementById('productBadge').value,
+        image: document.getElementById('productImage').value,
+        material: document.getElementById('productMaterial').value,
+        dimensions: document.getElementById('productDimensions').value,
+        madeToOrder: document.getElementById('productMadeToOrder').value === 'true',
+        productionDays: parseInt(document.getElementById('productProductionDays').value) || 0,
+        stock: stockVal === '' ? null : parseInt(stockVal)
+    };
+
+    DB.Products.save(p).then(function () {
+        return DB.Products.list();
+    }).then(function (list) {
+        products = list;
+        renderProducts();
+        updateStats();
+        closeModal();
+        showAlert('success', '✅ Produto salvo!');
+    });
+    return false;
+}
+
+// Orders
+function renderOrders() {
+    if (orders.length === 0) {
+        document.getElementById('ordersTable').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:3rem;">Nenhum pedido ainda</td></tr>';
+        return;
+    }
+
+    var html = '';
+    orders.slice().reverse().forEach(function(o) {
+        var date = new Date(o.date).toLocaleDateString('pt-BR');
+        html += '<tr>';
+        html += '<td><strong>' + (o.code || ('#' + o.id)) + '</strong></td>';
+        html += '<td>' + o.customerName + '</td>';
+        html += '<td>' + o.customerPhone + '</td>';
+        html += '<td>' + getPaymentLabel(o.payment) + '</td>';
+        html += '<td>' + getDeliveryLabel(o.delivery) + '</td>';
+        html += '<td><strong>R$ ' + o.total.toFixed(2) + '</strong></td>';
+        html += '<td>' + statusSelect(o) + '</td>';
+        html += '<td>' + date + '</td>';
+        html += '<td><button class="btn-sm btn-view" onclick="viewOrder(' + o.id + ')">Ver</button></td>';
+        html += '</tr>';
+    });
+    document.getElementById('ordersTable').innerHTML = html;
+}
+
+function statusBadge(status) {
+    var map = { pending: 'warning', confirmed: 'success', in_production: 'warning', ready: 'success', delivered: 'success', cancelled: 'danger' };
+    return '<span class="badge badge-' + (map[status] || 'warning') + '">' + (DB.Orders.STATUS_LABELS[status] || status) + '</span>';
+}
+
+function statusSelect(o) {
+    var html = '<select class="form-select" style="padding:0.4rem;font-size:0.8rem;" onchange="changeOrderStatus(' + o.id + ', this.value)">';
+    DB.Orders.STATUSES.forEach(function (s) {
+        html += '<option value="' + s + '"' + (o.status === s ? ' selected' : '') + '>' + DB.Orders.STATUS_LABELS[s] + '</option>';
+    });
+    html += '</select>';
+    return html;
+}
+
+function changeOrderStatus(id, status) {
+    DB.Orders.updateStatus(id, status).then(function () {
+        return DB.Orders.list();
+    }).then(function (list) {
+        orders = list;
+        updateStats();
+        showAlert('success', '✅ Status do pedido atualizado!');
+    });
+}
+
+function getPaymentLabel(p) {
+    var labels = { pix: 'PIX', card: 'Cartão', boleto: 'Boleto', delivery: 'Na Entrega' };
+    return labels[p] || p;
+}
+
+function getDeliveryLabel(d) {
+    var labels = { home: 'Casa', pickup: 'Loja', point: 'Ponto' };
+    return labels[d] || d;
+}
+
+function viewOrder(id) {
+    var order = orders.find(function(o) { return o.id === id; });
+    if (!order) return;
+
+    var html = '<div style="background:var(--gray-50);padding:1.5rem;border-radius:12px;margin-bottom:1rem;">';
+    html += '<h4 style="margin-bottom:1rem;">Pedido ' + (order.code || ('#' + order.id)) + '</h4>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>Cliente:</strong> ' + order.customerName + '</p>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>WhatsApp:</strong> ' + order.customerPhone + '</p>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>Email:</strong> ' + (order.customerEmail || '-') + '</p>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>Pagamento:</strong> ' + getPaymentLabel(order.payment) + '</p>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>Entrega:</strong> ' + getDeliveryLabel(order.delivery) + '</p>';
+    html += '<p style="margin-bottom:0.5rem;"><strong>Status atual:</strong> ' + statusBadge(order.status) + '</p>';
+    html += '<p><strong>Total:</strong> <span style="color:var(--primary);font-size:1.25rem;font-weight:800;">R$ ' + order.total.toFixed(2) + '</span></p>';
+    html += '</div>';
+
+    if (order.items && order.items.length > 0) {
+        html += '<h4 style="margin-top:1.5rem;margin-bottom:1rem;">Itens do Pedido:</h4>';
+        order.items.forEach(function(item) {
+            html += '<div style="padding:0.75rem;background:white;border-radius:8px;margin-bottom:0.5rem;">';
+            html += '• ' + item.product.name + ' <strong>(x' + item.qty + ')</strong> - R$ ' + (item.product.price * item.qty).toFixed(2);
+            html += '</div>';
+        });
+    }
+
+    if (order.statusHistory && order.statusHistory.length > 0) {
+        html += '<h4 style="margin-top:1.5rem;margin-bottom:1rem;">Histórico:</h4>';
+        order.statusHistory.forEach(function (h) {
+            html += '<div style="padding:0.5rem 0;font-size:0.85rem;color:var(--gray-600);">' + DB.Orders.STATUS_LABELS[h.status] + ' — ' + new Date(h.date).toLocaleString('pt-BR') + '</div>';
+        });
+    }
+
+    document.getElementById('orderDetails').innerHTML = html;
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('orderModal').classList.add('active');
+}
+
+// Coupons
+function renderCoupons() {
+    if (coupons.length === 0) {
+        document.getElementById('couponsList').innerHTML = '<div class="empty-state"><div class="empty-icon">🎫</div><p>Nenhum cupom criado</p></div>';
+        return;
+    }
+
+    var html = '';
+    coupons.forEach(function(c) {
+        var expiry = new Date(c.expiry).toLocaleDateString('pt-BR');
+        html += '<div class="coupon-card">';
+        html += '<div class="coupon-code">' + c.code + '</div>';
+        html += '<div class="coupon-details">';
+        html += '<span><strong>Desconto:</strong> ' + c.discount + '%</span>';
+        html += '<span><strong>Usos:</strong> ' + c.uses + '</span>';
+        html += '<span><strong>Válido até:</strong> ' + expiry + '</span>';
+        html += '</div>';
+        html += '<button class="btn-sm btn-delete" style="margin-top:0.75rem;" onclick="deleteCoupon(' + c.id + ')">Excluir</button>';
+        html += '</div>';
+    });
+    document.getElementById('couponsList').innerHTML = html;
+}
+
+function deleteCoupon(id) {
+    if (!confirm('Excluir este cupom?')) return;
+    DB.Coupons.remove(id).then(function () {
+        return DB.Coupons.list();
+    }).then(function (list) {
+        coupons = list;
+        renderCoupons();
+        updateStats();
+    });
+}
+
+function openCouponModal() {
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('couponModal').classList.add('active');
+}
+
+function saveCoupon(e) {
+    e.preventDefault();
+
+    var coupon = {
+        code: document.getElementById('couponCode').value.toUpperCase(),
+        discount: parseInt(document.getElementById('couponDiscount').value),
+        uses: parseInt(document.getElementById('couponUses').value),
+        expiry: document.getElementById('couponExpiry').value
+    };
+
+    DB.Coupons.save(coupon).then(function () {
+        return DB.Coupons.list();
+    }).then(function (list) {
+        coupons = list;
+        renderCoupons();
+        updateStats();
+        closeModal();
+        showAlert('success', '✅ Cupom criado com sucesso!');
+        e.target.reset();
+    });
+    return false;
+}
+
+// Categories
+function renderCategories() {
+    var html = '';
+    categories.forEach(function(cat, idx) {
+        html += '<div class="category-tag">';
+        html += '<span>' + cat + '</span>';
+        html += '<button class="category-remove" onclick="removeCategory(' + idx + ')">×</button>';
+        html += '</div>';
+    });
+    document.getElementById('categoriesList').innerHTML = html;
+    updateCategorySelects();
+}
+
+function addCategory() {
+    var input = document.getElementById('newCategory');
+    var cat = input.value.trim();
+    if (!cat) {
+        showAlert('error', 'Digite um nome para a categoria!');
+        return;
+    }
+    if (categories.includes(cat)) {
+        showAlert('error', 'Esta categoria já existe!');
+        return;
+    }
+    categories.push(cat);
+    DB.Categories.save(categories).then(function () {
+        input.value = '';
+        renderCategories();
+        showAlert('success', '✅ Categoria adicionada!');
+    });
+}
+
+function removeCategory(idx) {
+    if (!confirm('Remover esta categoria?')) return;
+    categories.splice(idx, 1);
+    DB.Categories.save(categories).then(function () {
+        renderCategories();
+    });
+}
+
+function updateCategorySelects() {
+    var select = document.getElementById('productCategory');
+    if (select) {
+        var html = '<option value="">Selecione uma categoria</option>';
+        categories.forEach(function(cat) {
+            html += '<option value="' + cat + '">' + cat + '</option>';
+        });
+        select.innerHTML = html;
+    }
+}
+
+// Chat
+function renderChatList() {
+    var users = {};
+    chatMessages.forEach(function(msg) {
+        if (!users[msg.userKey]) {
+            users[msg.userKey] = {
+                key: msg.userKey,
+                name: msg.userName || 'Cliente',
+                messages: [],
+                unread: 0
+            };
+        }
+        users[msg.userKey].messages.push(msg);
+        if (msg.sender === 'user' && !msg.read) {
+            users[msg.userKey].unread++;
+        }
+    });
+
+    var userList = Object.values(users);
+
+    if (userList.length === 0) {
+        document.getElementById('chatList').innerHTML = '<div class="empty-state" style="padding:3rem 1rem;"><div class="empty-icon">💬</div><p>Nenhuma conversa</p></div>';
+        return;
+    }
+
+    var html = '';
+    userList.forEach(function(user) {
+        var lastMsg = user.messages[user.messages.length - 1];
+        var time = new Date(lastMsg.date).toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+        var active = currentChatUser === user.key ? 'active' : '';
+        var unread = user.unread > 0 ? 'unread' : '';
+
+        html += '<div class="chat-item ' + active + ' ' + unread + '" onclick="openChat(\'' + user.key + '\')">';
+        html += '<div class="chat-item-header">';
+        html += '<span class="chat-name">' + user.name + '</span>';
+        html += '<span class="chat-time">' + time + '</span>';
+        html += '</div>';
+        html += '<div class="chat-preview">' + escapeHtmlAdmin(lastMsg.text) + '</div>';
+        if (user.unread > 0) {
+            html += '<span class="badge badge-danger" style="margin-top:0.5rem;">' + user.unread + ' nova(s)</span>';
+        }
+        html += '</div>';
+    });
+
+    document.getElementById('chatList').innerHTML = html;
+}
+
+function escapeHtmlAdmin(text) {
+    var div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
+
+function openChat(userKey) {
+    currentChatUser = userKey;
+    loadChatMessages(userKey);
+
+    chatMessages.forEach(function(msg) {
+        if (msg.userKey === userKey && msg.sender === 'user') {
+            msg.read = true;
+        }
+    });
+    DB.Chat.save(chatMessages).then(function () {
+        renderChatList();
+        updateStats();
+    });
+}
+
+function loadChatMessages(userKey) {
+    var userMsgs = chatMessages.filter(function(msg) { return msg.userKey === userKey; });
+
+    var html = '';
+    userMsgs.forEach(function(msg) {
+        html += '<div class="chat-message ' + msg.sender + '">';
+        html += '<div class="chat-bubble">' + escapeHtmlAdmin(msg.text) + '</div>';
+        html += '</div>';
+    });
+
+    document.getElementById('adminChatMessages').innerHTML = html;
+    document.getElementById('adminChatMessages').scrollTop = 999999;
+}
+
+function sendAdminMessage() {
+    if (!currentChatUser) {
+        showAlert('error', 'Selecione uma conversa primeiro!');
+        return;
+    }
+
+    var input = document.getElementById('adminChatInput');
+    var text = input.value.trim();
+
+    if (!text) return;
+
+    var msg = {
+        userKey: currentChatUser,
+        text: text,
+        sender: 'admin',
+        read: true
+    };
+
+    DB.Chat.add(msg).then(function () {
+        return DB.Chat.list();
+    }).then(function (list) {
+        chatMessages = list;
+        input.value = '';
+        loadChatMessages(currentChatUser);
+        renderChatList();
+    });
+}
+
+// Settings
+function loadSettings() {
+    document.getElementById('settingsName').value = config.name || '';
+    document.getElementById('settingsPhone').value = config.phone || '';
+    document.getElementById('settingsEmail').value = config.email || '';
+    document.getElementById('settingsPix').value = config.pix || '';
+}
+
+function saveSettings(e) {
+    e.preventDefault();
+    config.name = document.getElementById('settingsName').value;
+    config.phone = document.getElementById('settingsPhone').value;
+    config.email = document.getElementById('settingsEmail').value;
+    config.pix = document.getElementById('settingsPix').value;
+
+    DB.Config.save(config).then(function () {
+        var alert = document.getElementById('settingsAlert');
+        alert.textContent = '✅ Configurações salvas com sucesso!';
+        alert.classList.add('show');
+        setTimeout(function() { alert.classList.remove('show'); }, 3000);
+    });
+    return false;
+}
+
+function handleImportFile(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (evt) {
+        var res = DB.Backup.importJSON(evt.target.result);
+        if (res.ok) {
+            showAlert('success', '✅ Backup importado! Recarregando...');
+            setTimeout(function () { location.reload(); }, 1200);
+        } else {
+            showAlert('error', '❌ ' + res.reason);
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+}
+
+function openChangePassword() {
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('changePasswordModal').classList.add('active');
+}
+
+function openChangeUsername() {
+    document.getElementById('modalOverlay').classList.add('active');
+    document.getElementById('changeUsernameModal').classList.add('active');
+}
+
+function changePassword(e) {
+    e.preventDefault();
+
+    var current = document.getElementById('currentPass').value;
+    var newPass = document.getElementById('newPass').value;
+    var confirmPass = document.getElementById('confirmPass').value;
+
+    if (newPass !== confirmPass) {
+        showAlert('error', '❌ As senhas não coincidem!');
+        return false;
+    }
+
+    DB.Auth.changePassword(current, newPass).then(function (res) {
+        if (!res.ok) {
+            showAlert('error', '❌ ' + res.reason);
+            return;
+        }
+        showAlert('success', '✅ Senha alterada com sucesso!');
+        closeModal();
+        e.target.reset();
+    });
+
+    return false;
+}
+
+function changeUsername(e) {
+    e.preventDefault();
+
+    var pass = document.getElementById('userPassConfirm').value;
+    var newUser = document.getElementById('newUsername').value;
+
+    DB.Auth.changeUsername(pass, newUser).then(function (res) {
+        if (!res.ok) {
+            showAlert('error', '❌ ' + res.reason);
+            return;
+        }
+        currentSession = DB.Auth.getSession();
+        document.getElementById('currentUser').textContent = newUser;
+        document.getElementById('userAvatar').textContent = newUser.charAt(0).toUpperCase();
+        showAlert('success', '✅ Username alterado com sucesso!');
+        closeModal();
+        e.target.reset();
+    });
+
+    return false;
+}
+
+// Modal
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.querySelectorAll('.modal').forEach(function(m) {
+        m.classList.remove('active');
+    });
+}
+
+// Initialize
+DB.Auth.ensureDefault();
+if (currentSession) {
+    showDashboard();
+}
+
+console.log('✅ Admin pronto!');
+console.log('🔐 Login padrão: ferrera / 123 (troque a senha em Configurações)');
+</script>
+
+</body>
+</html>
